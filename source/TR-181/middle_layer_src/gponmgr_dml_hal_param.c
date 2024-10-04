@@ -35,24 +35,48 @@
 
 ANSC_STATUS gpon_hal_get_pm_index(char* ParamName, int* index)
 {
-    sscanf(ParamName,"Device.X_RDK_ONT.PhysicalMedia.%d.", index);
-    return ANSC_STATUS_SUCCESS;    
+    if ( NULL == ParamName )
+    {
+        AnscTraceError(("%s %d - Failed to get Physical Media Index\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    else
+    {
+        sscanf(ParamName,"Device.X_RDK_ONT.PhysicalMedia.%d.", index);
+        return ANSC_STATUS_SUCCESS;
+    }
 }
 
 ANSC_STATUS gpon_hal_get_gem_index(char* ParamName, int* index)
 {    
+    if ( NULL == ParamName )
+    {
+        AnscTraceError(("%s %d - Failed to get GEM Index\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    else
+    {
 #if defined(WAN_MANAGER_UNIFICATION_ENABLED)
-    sscanf(ParamName,"Device.X_RDK_ONT.GemStats.%d.", index);
+        sscanf(ParamName,"Device.X_RDK_ONT.GemStats.%d.", index);
 #else
-    sscanf(ParamName,"Device.X_RDK_ONT.Gem.%d.", index);
+        sscanf(ParamName,"Device.X_RDK_ONT.Gem.%d.", index);
 #endif
-    return ANSC_STATUS_SUCCESS;    
+        return ANSC_STATUS_SUCCESS;
+    }
 }
 
 ANSC_STATUS gpon_hal_get_veip_index(char* ParamName, int* index)
 {    
-    sscanf(ParamName,"Device.X_RDK_ONT.Veip.%d.", index);
-    return ANSC_STATUS_SUCCESS;    
+    if ( NULL == ParamName )
+    {
+        AnscTraceError(("%s %d - Failed to get VEIP Index\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    else
+    {
+        sscanf(ParamName,"Device.X_RDK_ONT.Veip.%d.", index);
+        return ANSC_STATUS_SUCCESS;
+    }
 }
 
 ANSC_STATUS Map_hal_dml_alarm(DML_ALARM* pGponAlarm, char* ParamName, char* pValue)
@@ -144,7 +168,12 @@ ANSC_STATUS Map_hal_dml_pm(DML_PHY_MEDIA_LIST_T* gponPhyList, char* ParamName, c
     char *err;
     int hal_index = 0;
     int pm_index = 0;
-  
+
+    if ((NULL == gponPhyList) || (NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - Null Input parameters for Physical media List\n", __FUNCTION__,__LINE__));
+        return retStatus;
+    }
     gpon_hal_get_pm_index(ParamName, &hal_index);    
     if(hal_index <= 0)
     {
@@ -449,7 +478,12 @@ ANSC_STATUS Map_hal_dml_gtc(DML_GTC* gponGtc,char* ParamName, char* pValue)
 {
     ANSC_STATUS retStatus = ANSC_STATUS_FAILURE;
     char *err;
-    
+    if ((NULL == gponGtc) || (NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - Null input parameters for GTC\n", __FUNCTION__, __LINE__));
+        return retStatus;
+    }
+
     /* check the parameter name and return the corresponding value */
     if( strstr(ParamName, "CorrectedFecBytes"))
     {
@@ -504,7 +538,12 @@ ANSC_STATUS Map_hal_dml_ploam(DML_PLOAM* gponPloam, char* ParamName, char* pValu
 {
     ANSC_STATUS retStatus = ANSC_STATUS_FAILURE;
     char *err;
-    
+    if ((NULL == gponPloam) || (NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - NUll input parameters for Ploam\n", __FUNCTION__, __LINE__));
+        return retStatus;
+    }
+
     if( strstr(ParamName, "OnuId"))
     {
         gponPloam->OnuId = strtoul(pValue,&err,10);
@@ -615,6 +654,13 @@ ANSC_STATUS Map_hal_dml_omci(DML_OMCI* gponOmci, char* ParamName, char* pValue)
 {
     ANSC_STATUS retStatus = ANSC_STATUS_FAILURE;
     char *err;
+
+    if((NULL == gponOmci) || (NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - Null input parameters for omci\n", __FUNCTION__, __LINE__));
+        return retStatus;
+    }
+
     
     if( strstr(ParamName, "RxBaseLineMessageCountValid"))
     {
@@ -648,6 +694,11 @@ ANSC_STATUS Map_hal_dml_gem(DML_GEM_LIST_T* gponGemList,char* ParamName, char* p
     int hal_index = 0;
     int gem_index = 0;
 
+    if((NULL == gponGemList) || (NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - NULL input parameters for Gem\n", __FUNCTION__, __LINE__));
+        return retStatus;
+    }
     
     gpon_hal_get_gem_index(ParamName, &hal_index);    
     if(hal_index <= 0)
@@ -877,6 +928,12 @@ ANSC_STATUS Map_hal_dml_veip(DML_VEIP_LIST_T* gponVeipList, char* ParamName, cha
     int hal_index = 0;
     int veip_index = 0;
 
+    if((NULL == gponVeipList) || (NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - Null input parameters for Veip\n", __FUNCTION__, __LINE__));
+        return retStatus;
+    }
+
     gpon_hal_get_veip_index(ParamName, &hal_index);
     
     if(hal_index <= 0)
@@ -984,7 +1041,11 @@ ANSC_STATUS Map_hal_dml_tr69(PDML_TR69 gponTr69,char * ParamName, char * pValue)
 {
     ANSC_STATUS retStatus = ANSC_STATUS_FAILURE;
     char *err;
-    
+    if ((NULL == ParamName) || (NULL == pValue))
+    {
+        AnscTraceError(("%s %d - Null input parameters for TR-69\n", __FUNCTION__, __LINE__));
+        return retStatus;
+    }
     if( strstr(ParamName, "url"))
     {
         strncpy(gponTr69->url,pValue,strlen(pValue)+1);
